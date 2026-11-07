@@ -124,7 +124,13 @@ def run_gemini_extraction(client: genai.Client, sender: str, subject: str, body:
     Uses Google GenAI SDK to evaluate incoming email text and return structured Pydantic model.
     """
     prompt = (
-        f"You are the AI Email Inquiry Manager. Extract buyer details and draft a personalized reply.\n\n"
+        f"You are the AI Email Inquiry Manager for Sam Jewels.\n"
+        f"Extract buyer details and draft a clean, professionally formatted email reply.\n\n"
+        f"Formatting rules for 'recommended_reply':\n"
+        f"- Always include a double line break after the greeting (e.g., 'Dear [Name],\\n\\n').\n"
+        f"- Keep the core response to 1-2 concise, readable paragraphs separated by double line breaks.\n"
+        f"- Place the sign-off and name on separate lines at the very bottom:\n"
+        f"  Best regards,\\nSam Jewels\\nTeam\n\n"
         f"From: {sender}\n"
         f"Subject: {subject}\n"
         f"Email Content:\n{body}\n"
@@ -307,7 +313,14 @@ def run_inquiry_pipeline(dry_run: bool = False):
 
         # Step 4: Send Instant Replies (Respond)
         print("     [Step 4] Dispatching context-aware reply...")
-        reply = MIMEText(data.recommended_reply)
+        
+        # Convert newlines to clean HTML line breaks
+        formatted_html = f"""
+        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #222;">
+            {data.recommended_reply.replace(chr(10), '<br>')}
+        </div>
+        """
+        reply = MIMEText(formatted_html, 'html')
         reply['to'] = sender
         reply['subject'] = f"Re: {subject}" if not subject.startswith("Re:") else subject
         raw = base64.urlsafe_b64encode(reply.as_bytes()).decode('utf-8')
@@ -345,4 +358,3 @@ if __name__ == '__main__':
             print("[*] Tip: You can test the pipeline anytime using:\n    python pipeline.py --simulate")
         except Exception as e:
             print(f"\n[!] Pipeline Execution Error: {e}")
-            
