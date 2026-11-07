@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Email Inquiry Manager - Autonomous Pipeline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased min-h-screen selection:bg-blue-600 selection:text-white">
+  <!-- Top Navigation Bar -->
+  <nav class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i class="fa-solid fa-envelope-open-text text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-white tracking-tight flex items-center gap-2">
+            AI Email Inquiry Manager
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 font-semibold tracking-wide uppercase">v2.0 Autonomous</span>
+          </h1>
+          <p class="text-xs text-slate-400">Capture • Qualify • Organize • Respond</p>
+        </div>
+      </div>
+
+      <!-- Quick Preset Controls & Live Mode -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs">
+          <span class="text-slate-400"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i>Preset:</span>
+          <select id="presetSelector" onchange="loadPreset(this.value)" class="bg-transparent text-slate-200 focus:outline-none cursor-pointer">
+            <option value="enterprise" class="bg-slate-900">Enterprise 500 Seats (Sales)</option>
+            <option value="support" class="bg-slate-900">Urgent SSO Outage (Support)</option>
+            <option value="partnership" class="bg-slate-900">Global Reseller Program (Partnership)</option>
+            <option value="general" class="bg-slate-900">Feature Roadmap (General Inquiry)</option>
+          </select>
+        </div>
+
+        <button onclick="toggleApiModal()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-key text-blue-400"></i>
+          <span id="apiStatusText">Live Gemini API (Optional)</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Modal: Live Gemini API Key Config -->
+  <div id="apiModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-blue-400"></i> Live Gemini Intelligence
+        </h3>
+        <button onclick="toggleApiModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">
+        Enter your Google Gemini API key to trigger real-time LLM inference. If omitted, the simulator uses high-fidelity heuristic parsing.
+      </p>
+      <div class="space-y-3 mb-5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Gemini API Key</label>
+          <input id="geminiApiKey" type="password" placeholder="AIzaSy..." class="w-full px-3 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-blue-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Model Version</label>
+          <select id="geminiModel" class="w-full px-3 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-blue-500 focus:outline-none">
+            <option value="gemini-2.5-flash">gemini-2.5-flash (Recommended)</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button onclick="clearApiKey()" class="px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-white">Clear</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">Save & Enable</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto p-4 lg:p-8 space-y-6">
+    <!-- Visual Pipeline Stages Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div id="step-1-card" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 transition-all">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Step 1</span>
+          <i class="fa-solid fa-inbox text-blue-400 text-sm"></i>
+        </div>
+        <div class="font-semibold text-xs text-slate-200">Gmail Inbox Trigger</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Polls unread buyer inquiries</div>
+      </div>
+
+      <div id="step-2-card" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 transition-all">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Step 2</span>
+          <i class="fa-solid fa-brain text-purple-400 text-sm"></i>
+        </div>
+        <div class="font-semibold text-xs text-slate-200">AI Intelligence Core</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Gemini entity extraction</div>
+      </div>
+
+      <div id="step-3-card" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 transition-all">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Step 3</span>
+          <i class="fa-solid fa-table-cells text-emerald-400 text-sm"></i>
+        </div>
+        <div class="font-semibold text-xs text-slate-200">Google Sheets CRM</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Logs structured buyer ledger</div>
+      </div>
+
+      <div id="step-4-card" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 transition-all">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Step 4</span>
+          <i class="fa-solid fa-paper-plane text-cyan-400 text-sm"></i>
+        </div>
+        <div class="font-semibold text-xs text-slate-200">Gmail Dispatcher</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Sends tailored instant reply</div>
+      </div>
+    </div>
+
+    <!-- Main Workspace Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Column: Inquiry Input Simulator -->
+      <div class="lg:col-span-5 bg-slate-950 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+            <h2 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs">1</span>
+              Gmail Inquiry Simulator
+            </h2>
+            <span class="text-[11px] text-emerald-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Live Listener
+            </span>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Sender Email</label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3 top-2.5 text-slate-600 text-xs"></i>
+                <input id="senderEmail" type="email" value="sarah.jenkins@enterprise.com" class="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-800 text-slate-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Email Subject</label>
+              <div class="relative">
+                <i class="fa-solid fa-heading absolute left-3 top-2.5 text-slate-600 text-xs"></i>
+                <input id="emailSubject" type="text" value="Need enterprise pricing for 500 seats" class="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-800 text-slate-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Email Message Body</label>
+              <textarea id="emailBody" rows="6" class="w-full p-3 text-xs rounded-xl bg-slate-900 border border-slate-800 text-slate-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono transition">Hi team,
+
+We are evaluating enterprise solutions for our 500-member logistics team and need formal volume pricing with guaranteed SLA response times.
+
+Could your solutions architect hop on a brief 15-minute demo this Thursday at 2 PM EST?
+
+Best regards,
+Sarah Jenkins
+VP Operations, Jenkins Logistics
+Direct: +1 (415) 555-0192</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 mt-4 border-t border-slate-800/80">
+          <button id="processBtn" onclick="runPipeline()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Run AI Inquiry Pipeline</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: AI Extraction & Auto-Reply -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Step 2: Extraction & Reply Preview -->
+        <div class="bg-slate-950 border border-slate-800/80 rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+            <h2 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-xs">2</span>
+              AI Lead Qualification & Entity Extraction
+            </h2>
+            <span id="pipelineStatusBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-mono">
+              Ready
+            </span>
+          </div>
+
+          <!-- Structured Extracted Entities Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mb-4">
+            <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800/80">
+              <span class="text-slate-500 text-[10px] uppercase font-semibold block mb-0.5">Sender Name</span>
+              <span id="resName" class="font-bold text-slate-200 truncate block">-</span>
+            </div>
+            <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800/80">
+              <span class="text-slate-500 text-[10px] uppercase font-semibold block mb-0.5">Company</span>
+              <span id="resCompany" class="font-bold text-slate-200 truncate block">-</span>
+            </div>
+            <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800/80">
+              <span class="text-slate-500 text-[10px] uppercase font-semibold block mb-0.5">Category</span>
+              <span id="resIntent" class="font-bold text-slate-200 truncate block">-</span>
+            </div>
+            <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800/80">
+              <span class="text-slate-500 text-[10px] uppercase font-semibold block mb-0.5">Urgency Level</span>
+              <span id="resPriority" class="font-bold text-slate-200 truncate block">-</span>
+            </div>
+          </div>
+
+          <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-800/80 mb-4">
+            <span class="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Summary of Intent</span>
+            <p id="resSummary" class="text-xs text-slate-300 italic">Run pipeline to synthesize prospect's exact requirements.</p>
+          </div>
+
+          <!-- Step 4: Instant Reply -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-reply text-cyan-400"></i>
+                Recommended Context-Aware Auto-Reply (Gmail Dispatcher)
+              </label>
+              <button onclick="copyReply()" class="text-[11px] text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                <i class="fa-regular fa-copy"></i> Copy
+              </button>
+            </div>
+            <div id="replyBox" class="p-4 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300 font-mono whitespace-pre-wrap min-h-[110px] leading-relaxed">Click "Run AI Inquiry Pipeline" to generate context-aware reply...</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Google Sheets CRM Sync Table -->
+        <div class="bg-slate-950 border border-slate-800/80 rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">3</span>
+              <div>
+                <h2 class="font-bold text-sm text-slate-200">Google Sheets CRM Destination Ledger</h2>
+                <span class="text-[11px] text-slate-500 font-mono">Target: Lead_Inquiries_2026 (Columns A-F)</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportToCSV()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition flex items-center gap-1">
+                <i class="fa-solid fa-file-csv text-emerald-400"></i> Export CSV
+              </button>
+              <button onclick="clearSheet()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-rose-950/30 text-rose-400 border border-slate-800 transition">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800/80">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-900/90 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+                  <th class="p-2.5">Col A: Timestamp</th>
+                  <th class="p-2.5">Col B: Sender Name</th>
+                  <th class="p-2.5">Col C: Sender Email</th>
+                  <th class="p-2.5">Col D: Company</th>
+                  <th class="p-2.5">Col E: Category</th>
+                  <th class="p-2.5">Col F: Intent Summary</th>
+                </tr>
+              </thead>
+              <tbody id="sheetRows" class="divide-y divide-slate-800/60 font-mono text-slate-300 text-[11px]">
+                <tr>
+                  <td colspan="6" class="p-4 text-center text-slate-500 italic">No inquiries synced yet. Click "Run AI Inquiry Pipeline" above.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Presets catalog
+    const presets = {
+      enterprise: {
+        email: "sarah.jenkins@enterprise.com",
+        subject: "Need enterprise pricing for 500 seats",
+        body: `Hi team,\n\nWe are evaluating enterprise solutions for our 500-member logistics team and need formal volume pricing with guaranteed SLA response times.\n\nCould your solutions architect hop on a brief 15-minute demo this Thursday at 2 PM EST?\n\nBest regards,\nSarah Jenkins\nVP Operations, Jenkins Logistics\nDirect: +1 (415) 555-0192`
+      },
+      support: {
+        email: "devon.miller@acme-cloud.io",
+        subject: "URGENT: SSO SAML integration broken in production",
+        body: `Hello Support,\n\nOur Okta SAML single sign-on integration broke 20 minutes ago after the latest maintenance window. None of our 120 engineers can log in to the dashboard.\n\nTicket priority: Critical Blocker.\nPlease escalate immediately to tier 3 on-call engineering.\n\nThanks,\nDevon Miller\nLead DevOps, Acme Cloud Systems`
+      },
+      partnership: {
+        email: "elena.rostova@nordic-ventures.eu",
+        subject: "Strategic Reseller Partnership Proposal (EMEA region)",
+        body: `Dear Business Development,\n\nWe represent a network of 45+ enterprise IT consultancies across Scandinavia and Central Europe. We would like to discuss official distribution and reseller revenue-sharing models for your AI infrastructure product.\n\nAre you open for an introductory call with our partner director next Tuesday?\n\nCordially,\nElena Rostova\nHead of Partnerships, Nordic Ventures EMEA`
+      },
+      general: {
+        email: "marcus.choi@fintech-labs.org",
+        subject: "Product query regarding SOC2 compliance and EU data residency",
+        body: `Hi there,\n\nQuick question before we initiate procurement: Is your platform SOC2 Type II certified, and do you offer European data residency (Frankfurt/Dublin regions) for customer data?\n\nLook forward to hearing from you.\n\nRegards,\nMarcus Choi`
+      }
+    };
+
+    function loadPreset(key) {
+      const p = presets[key];
+      if (!p) return;
+      document.getElementById('senderEmail').value = p.email;
+      document.getElementById('emailSubject').value = p.subject;
+      document.getElementById('emailBody').value = p.body;
+    }
+
+    function toggleApiModal() {
+      const modal = document.getElementById('apiModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('geminiApiKey').value.trim();
+      if (key) {
+        localStorage.setItem('gemini_api_key', key);
+        document.getElementById('apiStatusText').textContent = "Live Gemini: Active";
+        document.getElementById('apiStatusText').classList.add('text-emerald-400');
+      }
+      toggleApiModal();
+    }
+
+    function clearApiKey() {
+      localStorage.removeItem('gemini_api_key');
+      document.getElementById('geminiApiKey').value = '';
+      document.getElementById('apiStatusText').textContent = "Live Gemini API (Optional)";
+      document.getElementById('apiStatusText').classList.remove('text-emerald-400');
+      toggleApiModal();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('gemini_api_key');
+      if (savedKey) {
+        document.getElementById('geminiApiKey').value = savedKey;
+        document.getElementById('apiStatusText').textContent = "Live Gemini: Active";
+        document.getElementById('apiStatusText').classList.add('text-emerald-400');
+      }
+    });
+
+    async function runPipeline() {
+      const email = document.getElementById('senderEmail').value.trim();
+      const subject = document.getElementById('emailSubject').value.trim();
+      const body = document.getElementById('emailBody').value.trim();
+      const processBtn = document.getElementById('processBtn');
+      const badge = document.getElementById('pipelineStatusBadge');
+
+      processBtn.disabled = true;
+      processBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing with Gemini...`;
+      badge.textContent = "AI Reasoning...";
+      badge.className = "text-[11px] px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/40 font-mono animate-pulse";
+
+      let extracted = null;
+      const apiKey = localStorage.getItem('gemini_api_key');
+
+      if (apiKey) {
+        try {
+          extracted = await callGeminiApi(apiKey, email, subject, body);
+        } catch (err) {
+          console.warn("Live API call error, falling back to heuristic engine:", err);
+          extracted = heuristicAnalysis(email, subject, body);
+        }
+      } else {
+        // High fidelity heuristic simulator with 350ms natural latency simulation
+        await new Promise(r => setTimeout(r, 450));
+        extracted = heuristicAnalysis(email, subject, body);
+      }
+
+      // Populate UI
+      document.getElementById('resName').textContent = extracted.sender_name;
+      document.getElementById('resCompany').textContent = extracted.company_name;
+      document.getElementById('resIntent').textContent = extracted.inquiry_category;
+      
+      const priorityEl = document.getElementById('resPriority');
+      priorityEl.textContent = extracted.urgency_level;
+      if (extracted.urgency_level === 'High') {
+        priorityEl.className = "font-bold text-rose-400 truncate block";
+      } else if (extracted.urgency_level === 'Medium') {
+        priorityEl.className = "font-bold text-amber-400 truncate block";
+      } else {
+        priorityEl.className = "font-bold text-emerald-400 truncate block";
+      }
+
+      document.getElementById('resSummary').textContent = extracted.summary_intent;
+      document.getElementById('replyBox').textContent = extracted.recommended_reply;
+
+      // Sync to table (Step 3)
+      syncToGoogleSheets(extracted, email);
+
+      badge.textContent = "Synced & Dispatched";
+      badge.className = "text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono";
+
+      processBtn.disabled = false;
+      processBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Pipeline Completed`;
+      setTimeout(() => {
+        processBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> Run AI Inquiry Pipeline`;
+      }, 2500);
+    }
+
+    function heuristicAnalysis(email, subject, body) {
+      const combined = (subject + " " + body).toLowerCase();
+      
+      // Name heuristic
+      let name = "Prospect Contact";
+      const signoffMatch = body.match(/(?:Best regards|Regards|Best|Sincerely|Thanks|Cordially|Cheers),?\s*\n+([A-Za-z\s]+)/i);
+      if (signoffMatch && signoffMatch[1]) {
+        name = signoffMatch[1].trim().split('\n')[0];
+      } else if (email.includes('.')) {
+        const parts = email.split('@')[0].split('.');
+        name = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      }
+
+      // Company heuristic
+      let company = "Direct Client";
+      const companyMatch = body.match(/(?:at|from|with|,)\s+([A-Z][A-Za-z0-9&\s]+(?:Logistics|Cloud|Systems|Ventures|Labs|Inc|LLC|Corp|GmbH|Technologies|Ltd))/);
+      if (companyMatch) {
+        company = companyMatch[1].trim();
+      } else {
+        const domain = email.split('@')[1];
+        if (domain && !['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(domain)) {
+          const compName = domain.split('.')[0];
+          company = compName.charAt(0).toUpperCase() + compName.slice(1);
+        }
+      }
+
+      // Category & Urgency
+      let category = "General Inquiry";
+      let urgency = "Low";
+      let summary = "";
+      let reply = "";
+
+      if (combined.includes('urgent') || combined.includes('broken') || combined.includes('blocker') || combined.includes('outage') || combined.includes('error') || combined.includes('saml') || combined.includes('support')) {
+        category = "Product Support";
+        urgency = "High";
+        summary = `High-priority incident report regarding service disruption; prompt engineering escalation requested.`;
+        reply = `Hi ${name.split(' ')[0]},\n\nThank you for alerting us. Our engineering team has received your ticket regarding the incident at ${company} and marked it as Critical Urgency.\n\nA Tier 3 on-call engineer has been assigned to investigate the root cause immediately. We will update you directly within 30 minutes.\n\nBest regards,\nTechnical Escalations Team`;
+      } else if (combined.includes('pricing') || combined.includes('seats') || combined.includes('enterprise') || combined.includes('demo') || combined.includes('quote') || combined.includes('procurement')) {
+        category = "Enterprise Sales";
+        urgency = "High";
+        summary = `Enterprise procurement inquiry requesting volume pricing and live demonstration for a team evaluation.`;
+        reply = `Hi ${name.split(' ')[0]},\n\nThank you for reaching out to us regarding an enterprise rollout for ${company}.\n\nWe would be thrilled to demonstrate our platform and provide tailored volume pricing with enterprise SLA guarantees. Our solutions architect will coordinate with your schedule to lock in a demo walkthrough.\n\nLooking forward to speaking soon.\n\nWarm regards,\nEnterprise Solutions Desk`;
+      } else if (combined.includes('partner') || combined.includes('reseller') || combined.includes('distribution') || combined.includes('revenue-sharing')) {
+        category = "Partnership";
+        urgency = "Medium";
+        summary = `Strategic partnership inquiry seeking reseller distribution and collaborative engagement framework.`;
+        reply = `Dear ${name.split(' ')[0]},\n\nThank you for your interest in partnering with us at ${company}.\n\nWe are actively expanding our partner channel and would welcome an introductory discussion on joint distribution and revenue-share models. Our Partner Director will follow up shortly to arrange a conversation.\n\nBest regards,\nStrategic Alliances`;
+      } else {
+        category = "General Inquiry";
+        urgency = "Low";
+        summary = `General prospective customer query requesting clarification on security certifications, specifications, and architecture.`;
+        reply = `Hi ${name.split(' ')[0]},\n\nThank you for reaching out with your question.\n\nOur platform maintains strict SOC2 Type II compliance and supports regional data isolation across the US and Europe. We've routed your inquiry to our product team, who will provide the detailed documentation packet shortly.\n\nBest regards,\nCustomer Success Team`;
+      }
+
+      return {
+        sender_name: name,
+        company_name: company,
+        inquiry_category: category,
+        urgency_level: urgency,
+        summary_intent: summary,
+        recommended_reply: reply
+      };
+    }
+
+    async function callGeminiApi(apiKey, senderEmail, subject, body) {
+      const model = document.getElementById('geminiModel').value;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+      const prompt = `Analyze this incoming business email inquiry and return a JSON object with EXACTLY this schema:
+{
+  "sender_name": "Full name of the sender",
+  "company_name": "Company/organization name (or 'Individual')",
+  "inquiry_category": "Enterprise Sales | Product Support | Partnership | General Inquiry",
+  "urgency_level": "High | Medium | Low",
+  "summary_intent": "One sentence summary of what the lead wants",
+  "recommended_reply": "Professional, warm, context-aware auto-reply draft addressing specific questions"
+}
+
+Email details:
+From: ${senderEmail}
+Subject: ${subject}
+Body:
+${body}
+`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+      }
+
+      const json = await response.json();
+      const rawText = json.candidates[0].content.parts[0].text;
+      return JSON.parse(rawText);
+    }
+
+    function syncToGoogleSheets(data, email) {
+      const tbody = document.getElementById('sheetRows');
+      if (tbody.innerHTML.includes("No inquiries synced yet")) {
+        tbody.innerHTML = "";
+      }
+
+      const now = new Date();
+      const isoTimestamp = now.toISOString();
+
+      const tr = document.createElement('tr');
+      tr.className = "hover:bg-slate-900/60 transition bg-slate-950/40 border-b border-slate-800/40";
+      tr.innerHTML = `
+        <td class="p-2.5 text-slate-400 whitespace-nowrap">${isoTimestamp.slice(0, 19).replace('T', ' ')}</td>
+        <td class="p-2.5 font-bold text-slate-200 whitespace-nowrap">${data.sender_name}</td>
+        <td class="p-2.5 text-blue-400 whitespace-nowrap">${email}</td>
+        <td class="p-2.5 text-slate-300 whitespace-nowrap">${data.company_name}</td>
+        <td class="p-2.5 whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${getCategoryBadge(data.inquiry_category)}">${data.inquiry_category}</span></td>
+        <td class="p-2.5 text-slate-400 truncate max-w-xs" title="${data.summary_intent}">${data.summary_intent}</td>
+      `;
+      tbody.prepend(tr);
+    }
+
+    function getCategoryBadge(cat) {
+      if (cat.includes("Sales")) return "bg-blue-500/20 text-blue-300 border border-blue-500/30";
+      if (cat.includes("Support")) return "bg-rose-500/20 text-rose-300 border border-rose-500/30";
+      if (cat.includes("Partner")) return "bg-purple-500/20 text-purple-300 border border-purple-500/30";
+      return "bg-slate-700 text-slate-300 border border-slate-600";
+    }
+
+    function clearSheet() {
+      const tbody = document.getElementById('sheetRows');
+      tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No inquiries synced yet. Click "Run AI Inquiry Pipeline" above.</td></tr>`;
+    }
+
+    function copyReply() {
+      const reply = document.getElementById('replyBox').textContent;
+      navigator.clipboard.writeText(reply).then(() => {
+        alert("Auto-reply copied to clipboard!");
+      });
+    }
+
+    function exportToCSV() {
+      const rows = document.querySelectorAll('#sheetRows tr');
+      if (rows.length === 0 || rows[0].innerText.includes("No inquiries")) {
+        alert("No entries to export.");
+        return;
+      }
+      let csv = "Timestamp,Sender Name,Sender Email,Company,Category,Intent Summary\n";
+      rows.forEach(r => {
+        const cells = Array.from(r.querySelectorAll('td')).map(td => `"${td.innerText.replace(/"/g, '""')}"`);
+        if (cells.length === 6) {
+          csv += cells.join(",") + "\n";
+        }
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Lead_Inquiries_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
+
