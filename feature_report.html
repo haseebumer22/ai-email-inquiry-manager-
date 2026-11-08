@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Email Inquiry Manager - Feature & Capability Report</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 15mm 18mm 15mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.55;
+      font-size: 13px;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .header {
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin: 0 0 4px 0;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+      margin: 0;
+    }
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .meta-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #475569;
+    }
+    .meta-item strong {
+      color: #0f172a;
+    }
+    h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      border-left: 4px solid #2563eb;
+      padding-left: 8px;
+      margin: 18px 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    p {
+      margin: 0 0 10px 0;
+    }
+    ul {
+      margin: 0 0 14px 0;
+      padding-left: 18px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    li strong {
+      color: #0f172a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px 0;
+      font-size: 11.5px;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+    }
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    .code-pill {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #0f172a;
+    }
+    .pipeline-diagram {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0 18px 0;
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+      gap: 8px;
+    }
+    .step {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 6px;
+    }
+    .step-num {
+      font-size: 9px;
+      font-weight: 800;
+      color: #2563eb;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .step-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+    .step-desc {
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.3;
+    }
+    .footer {
+      margin-top: 24px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 10px;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1 class="title">AI Email Inquiry Manager</h1>
+      <p class="subtitle">Autonomous Communications &amp; Lead Capture System Architecture</p>
+    </div>
+    <div>
+      <span class="badge">Production Blueprint</span>
+    </div>
+  </div>
+
+  <!-- METADATA BOX -->
+  <div class="meta-box">
+    <div class="meta-item"><strong>Platform:</strong> Python 3.10+ / Google APIs</div>
+    <div class="meta-item"><strong>AI Engine:</strong> Google Gemini 2.5 Flash</div>
+    <div class="meta-item"><strong>Integrations:</strong> Gmail &amp; Google Sheets</div>
+    <div class="meta-item"><strong>Target Brand:</strong> Sam Jewels</div>
+  </div>
+
+  <!-- ARCHITECTURE FLOW -->
+  <h2>1. End-to-End Pipeline Architecture</h2>
+  <div class="pipeline-diagram">
+    <div class="step">
+      <div class="step-num">Step 1</div>
+      <div class="step-name">Inbox Trigger</div>
+      <div class="step-desc">Polls unread buyer inquiries from Gmail via OAuth2</div>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 2</div>
+      <div class="step-name">Daemon Filter</div>
+      <div class="step-desc">Discards no-reply, billing, and system alert emails</div>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 3</div>
+      <div class="step-name">AI Core (Gemini)</div>
+      <div class="step-desc">Extracts buyer entities &amp; intent via strict JSON schema</div>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 4</div>
+      <div class="step-name">Sheets CRM</div>
+      <div class="step-desc">Appends structured record to centralized ledger</div>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 5</div>
+      <div class="step-name">Instant Reply</div>
+      <div class="step-desc">Dispatches styled HTML reply directly in the thread</div>
+    </div>
+  </div>
+
+  <!-- CORE FEATURES -->
+  <h2>2. Ingestion &amp; Inbox Monitoring</h2>
+  <ul>
+    <li><strong>Automated Gmail Inbox Polling:</strong> Connects securely using official Google API (<span class="code-pill">gmail/v1</span>) with OAuth 2.0, querying for unread buyer inquiries (<span class="code-pill">is:unread label:INBOX</span>).</li>
+    <li><strong>Intelligent Daemon &amp; Spam Filtering:</strong> Utilizes an active exclusion list (<span class="code-pill">IGNORE_KEYWORDS</span>) to automatically skip and silence non-actionable emails (<span class="code-pill">no-reply</span>, <span class="code-pill">alerts@</span>, <span class="code-pill">mailer-daemon</span>, <span class="code-pill">donotreply</span>, <span class="code-pill">google.com</span>, etc.).</li>
+    <li><strong>Zero-Duplicate Archiving:</strong> Once an inquiry is handled, the pipeline automatically strips the <span class="code-pill">UNREAD</span> label to prevent reprocessing loops and keep your inbox organized.</li>
+  </ul>
+
+  <h2>3. AI Intelligence &amp; Lead Qualification</h2>
+  <ul>
+    <li><strong>Powered by Gemini 2.5 Flash:</strong> Ultra-fast reasoning and contextual understanding on unstructured email messages, subject lines, and sender signatures.</li>
+    <li><strong>Strict Pydantic JSON Schema:</strong> Guarantees zero hallucinations through typed schema validation:
+      <ul>
+        <li><span class="code-pill">sender_name</span>: Full prospect name extracted from greeting, body, or metadata.</li>
+        <li><span class="code-pill">company_name</span>: Detected business or firm (defaults to 'Individual').</li>
+        <li><span class="code-pill">inquiry_category</span>: Categorized into <em>Enterprise Sales</em>, <em>Product Support</em>, <em>Partnership</em>, or <em>General Inquiry</em>.</li>
+        <li><span class="code-pill">urgency_level</span>: Evaluated priority grade (<em>High</em>, <em>Medium</em>, or <em>Low</em>).</li>
+        <li><span class="code-pill">summary_intent</span>: Concise 1-sentence breakdown of what the prospect needs.</li>
+        <li><span class="code-pill">recommended_reply</span>: Context-aware personalized reply draft addressing specific inquiries.</li>
+      </ul>
+    </li>
+    <li><strong>High-Demand Resilience (503 Auto-Retry):</strong> Handles transient API throttling with automated exponential backoff up to 5 successive attempts.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- DESTINATION CRM -->
+  <h2>4. Centralized Google Sheets CRM Sync</h2>
+  <p>Every qualified lead is logged in real-time into the target destination ledger (<span class="code-pill">Lead_Inquiries_2026</span>):</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 15%;">Column</th>
+        <th style="width: 25%;">Field Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Column A</strong></td>
+        <td><span class="code-pill">Timestamp</span></td>
+        <td>Execution timestamp in ISO 8601 UTC format.</td>
+      </tr>
+      <tr>
+        <td><strong>Column B</strong></td>
+        <td><span class="code-pill">Sender Name</span></td>
+        <td>Extracted full name of the prospect.</td>
+      </tr>
+      <tr>
+        <td><strong>Column C</strong></td>
+        <td><span class="code-pill">Sender Email</span></td>
+        <td>Direct contact email address parsed from header.</td>
+      </tr>
+      <tr>
+        <td><strong>Column D</strong></td>
+        <td><span class="code-pill">Company</span></td>
+        <td>Identified enterprise, organization, or personal client.</td>
+      </tr>
+      <tr>
+        <td><strong>Column E</strong></td>
+        <td><span class="code-pill">Category</span></td>
+        <td>Intent category (Sales, Support, Partnership, General).</td>
+      </tr>
+      <tr>
+        <td><strong>Column F</strong></td>
+        <td><span class="code-pill">Summary / Intent</span></td>
+        <td>Synthesized 1-sentence requirement breakdown.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- DISPATCHER -->
+  <h2>5. Instant Context-Aware Auto-Reply Dispatcher</h2>
+  <ul>
+    <li><strong>Brand Voice &amp; Persona:</strong> Configured for <strong>Sam Jewels</strong> with strict professional standards: double line-breaks after greeting, 1–2 focused readable paragraphs, and clean corporate sign-offs.</li>
+    <li><strong>Clean HTML Styling:</strong> Automatically converts raw text newlines into web-safe HTML formatting (<span class="code-pill">Arial</span>, 14px font, 1.6 line height) to render consistently on mobile and desktop email clients.</li>
+    <li><strong>Thread Continuity (<span class="code-pill">threadId</span>):</strong> Replies directly inside the customer's existing thread, preserving full context and subject history (<span class="code-pill">Re: [Subject]</span>).</li>
+  </ul>
+
+  <!-- MULTI-MODE EXECUTION -->
+  <h2>6. Execution Modes &amp; Developer Tooling</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 28%;">Execution Mode</th>
+        <th style="width: 32%;">Command</th>
+        <th>Functionality</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Full Production</strong></td>
+        <td><span class="code-pill">python pipeline.py</span></td>
+        <td>Autonomous live pipeline: polls Gmail, parses with Gemini, appends to Sheets, sends replies.</td>
+      </tr>
+      <tr>
+        <td><strong>Dry Run Mode</strong></td>
+        <td><span class="code-pill">python pipeline.py --dry-run</span></td>
+        <td>Inspects live Gmail messages &amp; tests Gemini extraction without writing rows or sending replies.</td>
+      </tr>
+      <tr>
+        <td><strong>Local Simulation</strong></td>
+        <td><span class="code-pill">python pipeline.py --simulate</span></td>
+        <td>Tests full extraction, schema mapping, and output formatting offline with zero credentials.</td>
+      </tr>
+      <tr>
+        <td><strong>1-Click OAuth Setup</strong></td>
+        <td><span class="code-pill">python setup_auth.py</span></td>
+        <td>Spawns local OAuth server &amp; browser to generate authorized <span class="code-pill">token.json</span> credentials.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- INTERACTIVE PROTOTYPE & SECURITY -->
+  <h2>7. Interactive Web Prototype &amp; Enterprise Security</h2>
+  <ul>
+    <li><strong>Interactive UI Simulation (<span class="code-pill">index.html</span>):</strong> Self-contained Tailwind CSS dashboard with preset scenarios, stage visualizers, live client-side Gemini API inference, and 1-click CSV export.</li>
+    <li><strong>Zero-Leakage Git Protection:</strong> Enforced through <span class="code-pill">.gitignore</span>, strictly barring sensitive tokens (<span class="code-pill">credentials.json</span>, <span class="code-pill">token.json</span>, and <span class="code-pill">.env</span>) from ever being committed to GitHub.</li>
+    <li><strong>Automatic OAuth Refresh:</strong> Seamlessly renews expired Google access tokens in the background without requiring user re-authentication.</li>
+  </ul>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>AI Email Inquiry Manager • Confidential Technical Document</div>
+    <div>Generated: November 2026 • Version 2.0 Autonomous</div>
+  </div>
+
+</body>
+</html>
